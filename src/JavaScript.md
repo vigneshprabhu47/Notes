@@ -57,6 +57,8 @@ for (let x of invChr) {
 }
 ```
 
+------
+
 **2. Simple date formats**
 ```JS
 const opt1 = { day: "numeric", month: "short", year: "numeric" };
@@ -76,6 +78,8 @@ console.log(
   // Returns "Sep 01, 2022"
 );
 ```
+
+------
 
 **3. Simple conversions**
 ```JS
