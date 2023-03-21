@@ -76,3 +76,95 @@ console.log(
   // Returns "Sep 01, 2022"
 );
 ```
+
+**3. Simple conversions**
+```JS
+var a = [
+  undefined,
+  null,
+  true,
+  false,
+  "",
+  "  ",
+  "vipr",
+  0,
+  60,
+  1.6180339887,
+  NaN,
+  [],
+  [1, 2, 3],
+  ["A", "D", "M"],
+  new Date(),
+  {},
+  Object.create(null),
+  {"a": "m"},
+  new Set(),
+  new Map(),
+  new Map([ ['a', 1], ['d', 3] ]),
+  Symbol(),
+  Symbol('a'),
+  ,  // Increases Array.length by 1, but does not project during map (Empty location).
+].map(x => {
+  let o = Object.create(null);
+  o.Value = x;
+
+  // Unary +
+  try {
+    o["Numeric (Unary +)"] = +x;
+  } catch {
+    o["Numeric (Unary +)"] = "ERROR";
+  }
+
+  // JSON.stringify
+  try {
+    o["JSON.stringify"] = JSON.stringify(x);
+  } catch {
+    o["JSON.stringify"] = "ERROR";
+  }
+
+  // Template string for implicit conversion
+  try {
+    o["String Templating (``)"] = `${x}`;
+  } catch {
+    o["String Templating (``)"] = "ERROR";
+  }
+
+  // Datatype
+  try {
+    o["Object.prototype.toString.call"] = Object.prototype.toString.call(x);
+  } catch {
+    o["Object.prototype.toString.call"] = "ERROR";
+  }
+
+  return o;
+});
+
+console.table(a);
+```
+
+Output: `Array(24)`
+Expression            | Value          | Numeric (Unary +) | JSON.stringify    | String Templating (\`\`)   | Object.prototype.toString.call
+:-----                | :-----         | :-----            | :-----            | :-----              | :-----
+`undefined`           | `undefined`    | `NaN`             | `undefined`       | `'undefined'`       |   `'[object Undefined]'`
+`null`                | `null`         | `0`               | `'null'`          | `'null'`            |   `'[object Null]'`
+`true`                | `true`         | `1`               | `'true'`          | `'true'`            |   `'[object Boolean]'`
+`false`               | `false`        | `0`               | `'false'`         | `'false'`           |   `'[object Boolean]'`
+`""`                  | `''`           | `0`               | `'""'`            | `''`                |   `'[object String]'`
+`"  "`                | `' '`          | `0`               | `'" "'`           | `' '`               |   `'[object String]'`
+`"vipr"`              | `'vipr'`       | `NaN`             | `'"vipr"'`        | `'vipr'`            |   `'[object String]'`
+`0`                   | `0`            | `0`               | `'0'`             | `'0'`               |   `'[object Number]'`
+`60`                  | `60`           | `60`              | `'60'`            | `'60'`              |   `'[object Number]'`
+`1.6180339887`        | `1.6180339887` | `1.6180339887`    | `'1.6180339887'`  | `'1.6180339887'`    |   `'[object Number]'`
+`NaN`                 | `NaN`          | `NaN`             | `'null'`          | `'NaN'`             |   `'[object Number]'`
+`[]`                  | `Array(0)`     | `0`               | `'[]'`            | `''`                |   `'[object Array]'`
+`[1, 2, 3]`           | `Array(3)`     | `NaN`             | `'[1,2,3]'`       | `'1,2,3'`           |   `'[object Array]'`
+`["A", "D", "M"]`     | `Array(3)`     | `NaN`             | `'["A","D","M"]'` | `'A,D,M'`           |   `'[object Array]'`
+`new Date()`          | `Sun Sep 18 2022 18:00:00 GMT+0530 (India Standard Time)` | `1663504200000` | `'"2022-09-18T12:30:00.000Z"'` | `'Sun Sep 18 2022 18:00:00 GMT+0530 (India Standard Time)'` | `'[object Date]'`
+`{}`                  | `{…}`          | `NaN`             | `'{}'`            | `'[object Object]'` |   `'[object Object]'`
+`Object.create(null)` | `{…}`          | ERROR             | `'{}'`            | ERROR               |   `'[object Object]'`
+`{"a": "m"}`          | `{…}`          | `NaN`             | `'{"a":"m"}'`     | `'[object Object]'` |   `'[object Object]'`
+`new Set()`           | `Set(0)`       | `NaN`             | `'{}'`            | `'[object Set]'`    |   `'[object Set]'`
+`new Map()`           | `Map(0)`       | `NaN`             | `'{}'`            | `'[object Map]'`    |   `'[object Map]'`
+`new Map([ ['a', 1], ['d', 3] ])` | `Map(2)` | `NaN` | `'{}'` | `'[object Map]'` | `'[object Map]'`
+`Symbol()`            | `Symbol()`     | ERROR             | `undefined`       | ERROR               |   `'[object Symbol]'`
+`Symbol('a')`         | `Symbol(a)`    | ERROR             | `undefined`       | ERROR               |   `'[object Symbol]'`
