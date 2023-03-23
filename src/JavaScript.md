@@ -1,4 +1,4 @@
-**1. List of invisible & zero-length characters (JavaScript character code + unicode string)**
+##### 1. List of invisible & zero-length characters (JavaScript character code + unicode string)
 ```JS
 var invChr = [
   [160,   '"\\u00A0"'], // Non-breaking whitespace (HTML entity -> &nbsp;)
@@ -59,7 +59,7 @@ for (let x of invChr) {
 
 ------
 
-**2. Simple date formats**
+##### 2. Simple date formats
 ```JS
 const opt1 = { day: "numeric", month: "short", year: "numeric" };
 const opt2 = { day: "2-digit", month: "short", year: "numeric" };
@@ -81,7 +81,7 @@ console.log(
 
 ------
 
-**3. Simple conversions**
+##### 3. Simple conversions
 ```JS
 var a = [
   undefined,
