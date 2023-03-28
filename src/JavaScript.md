@@ -172,3 +172,81 @@ Expression            | Value          | Numeric (Unary +) | JSON.stringify    |
 `new Map([ ['a', 1], ['d', 3] ])` | `Map(2)` | `NaN` | `'{}'` | `'[object Map]'` | `'[object Map]'`
 `Symbol()`            | `Symbol()`     | ERROR             | `undefined`       | ERROR               |   `'[object Symbol]'`
 `Symbol('a')`         | `Symbol(a)`    | ERROR             | `undefined`       | ERROR               |   `'[object Symbol]'`
+
+------
+
+##### 4. Code to generate simple, reusable CSS classes
+```JS
+// START: Helpers
+/**
+ * Generates a range of integers as per the parameters.\
+ * The lower (`start`) and upper (`stop`) bounds are
+ * inclusive.\
+ * `step` is defaulted to 1.
+ * This cannot be zero (use `Array(length).fill(value)`
+ * instead).
+ */
+const range = (start, stop, step = 1) =>
+  Array
+    .from(
+      { length: ((stop - start) / step) + 1 },
+      (_, i) => start + (i * step)
+    );
+// END  : Helpers
+
+// Minify the result or prettify:
+var minify = false;
+
+// Update the below objects as needed.
+// (class prefix, scale & value range)
+
+// ScalePrefix-Unit map:
+const omapScaleUnit = {
+  x: 'px',  // Pixel
+  p: '%',   // Percent
+  e: 'em',  // Relative to parent
+  r: 'rem', // Relative to root element
+  c: 'cm'   // Centimeter
+}
+
+// ClassnamePrefix-Property map
+const omapClassProp = {
+  p: 'padding',         // Padding All
+  pt: 'padding-top',    // Padding Top
+  pr: 'padding-right',  // Padding Right
+  pb: 'padding-bottom', // Padding Bottom
+  pl: 'padding-left',   // Padding Left
+  m: 'margin',          // Margin  All
+  mt: 'margin-top',     // Margin  Top
+  mr: 'margin-right',   // Margin  Right
+  mb: 'margin-bottom',  // Margin  Bottom
+  ml: 'margin-left'     // Margin  Left
+};
+
+// Range of numbers to be used as property values:
+const arrMagnitudeRange = [
+  ...range(1, 20),
+  ...range(25, 50, 5),
+  ...range(60, 100, 10)
+];
+
+const visualDelim = minify ? '' : '\x20';
+
+var css = '// Programmatically generated, inspect for potential errors.\n\n';
+
+for (let sc in omapScaleUnit) {
+  let unit = omapScaleUnit[sc];
+
+  for (let cl in omapClassProp) {
+    let prop = omapClassProp[cl];
+
+    for (let mg of arrMagnitudeRange) {
+      css +=
+        `.${cl}${sc}${mg}${visualDelim}` +
+        `{${visualDelim}${prop}:${visualDelim}${mg}${unit};${visualDelim}}\n`;
+    }
+  }
+}
+
+console.log(css);
+```
