@@ -29,5 +29,5 @@
 
 - Typecasting & using .NET's `String.PadLeft()` method:
   ```ps1
-  1..10000 | % { Write-Output "Sample data for test - $(([string]$_).PadLeft(5,"0"))" > "Sample data for test - $(([string]$_).PadLeft(5,"0")).txt" }
+  1..10000 | % { Write-Output "Sample data for test - $(([string]$_).PadLeft(5,"0"))" > "Test_Data_$(([string]$_).PadLeft(5,"0")).txt" }
   ```
