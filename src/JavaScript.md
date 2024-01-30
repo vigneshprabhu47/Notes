@@ -96,7 +96,7 @@ var a = [
   1.6180339887,
   NaN,
   [],
-  [1, 2, 3],
+  [1, 3, 2],
   ["A", "D", "M"],
   new Date(),
   {},
@@ -161,7 +161,7 @@ Expression            | Value          | Numeric (Unary +) | JSON.stringify    |
 `1.6180339887`        | `1.6180339887` | `1.6180339887`    | `'1.6180339887'`  | `'1.6180339887'`    |   `'[object Number]'`
 `NaN`                 | `NaN`          | `NaN`             | `'null'`          | `'NaN'`             |   `'[object Number]'`
 `[]`                  | `Array(0)`     | `0`               | `'[]'`            | `''`                |   `'[object Array]'`
-`[1, 2, 3]`           | `Array(3)`     | `NaN`             | `'[1,2,3]'`       | `'1,2,3'`           |   `'[object Array]'`
+`[1, 3, 2]`           | `Array(3)`     | `NaN`             | `'[1,3,2]'`       | `'1,3,2'`           |   `'[object Array]'`
 `["A", "D", "M"]`     | `Array(3)`     | `NaN`             | `'["A","D","M"]'` | `'A,D,M'`           |   `'[object Array]'`
 `new Date()`          | `Sun Sep 18 2022 18:00:00 GMT+0530 (India Standard Time)` | `1663504200000` | `'"2022-09-18T12:30:00.000Z"'` | `'Sun Sep 18 2022 18:00:00 GMT+0530 (India Standard Time)'` | `'[object Date]'`
 `{}`                  | `{…}`          | `NaN`             | `'{}'`            | `'[object Object]'` |   `'[object Object]'`
