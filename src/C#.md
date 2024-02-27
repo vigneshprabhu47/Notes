@@ -8,7 +8,6 @@ namespace ANamespace
 {
     public class AClass
     {
-        const string CSA = "CamServiceApp";
         const string E = "";
 
         /// <summary>
