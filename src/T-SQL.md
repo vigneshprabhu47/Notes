@@ -18,7 +18,7 @@ BEGIN
     BEGIN CATCH
         ROLLBACK TRAN uspAStoredProcedure_T1;
         THROW;
-    TRY CATCH
+    END CATCH
 END
 GO
 ```
