@@ -1,61 +1,149 @@
-##### 1. Routine to get the full stacktrace of an Exception
+##### 1. Routine to get the full stacktrace of an Exception object
 ```CS
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace ANamespace
+using static Newtonsoft.Json.JsonConvert;
+
+namespace ANameSpace
 {
-    public class AClass
+    public class ErrorTrace
+    {
+        [JsonProperty("error")]
+        public string Error { get; set; }
+
+        [JsonProperty("trace")]
+        public string Trace { get; set; }
+    }
+
+    public static class AClass
     {
         const string E = "";
+
+        private static string GetSingleLineString(string s)
+        {
+            return Regex.Replace(
+                s,
+                @"\s+|\t+|(\r?\n)+",
+                " ");
+        }
 
         /// <summary>
         ///     Compiles the error messages &amp; stacktraces of
         ///     the <see cref="Exception"/> object and the
-        ///     inner exceptions recursively until the child
-        ///     exception object is null.
+        ///     inner exceptions recursively.
         /// </summary>
         /// <param name="ex">Exception object.</param>
-        /// <param name="currentDepth">
-        ///     Recursion depth, starts at 1.
+        /// <param name="multilineOutput">
+        ///     If true, the linebreaks, tabs &amp; multiple
+        ///     occurances of whitespaces will be replaced
+        ///     by a single whitespace.
+        /// </param>
+        /// <returns>
+        ///      A list of <see cref="ErrorTrace"/>.
+        ///      <br />
+        ///      Returns null on error.
+        /// </returns>
+        public static List<ErrorTrace> GetAllErrorTraces(Exception ex, bool multilineOutput = true)
+        {
+            try
+            {
+                var traces = new List<ErrorTrace>();
+                var currentException = ex;
+
+                if (multilineOutput)
+                {
+                    do
+                    {
+                        traces.Add(
+                            new ErrorTrace
+                            {
+                                Error = currentException?.Message ?? E,
+                                Trace = currentException?.StackTrace ?? E
+                            });
+
+                        currentException = currentException.InnerException;
+                    } while (currentException.InnerException != null);
+                }
+                else
+                {
+                    do
+                    {
+                        traces.Add(
+                            new ErrorTrace
+                            {
+                                Error = GetSingleLineString(currentException?.Message ?? E),
+                                Trace = GetSingleLineString(currentException?.StackTrace ?? E)
+                            });
+
+                        currentException = currentException.InnerException;
+                    } while (currentException.InnerException != null);
+                }
+
+                return traces;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        ///     Compiles the error messages &amp; stacktraces of
+        ///     the <see cref="Exception"/> object and the
+        ///     inner exceptions recursively.
+        /// </summary>
+        /// <param name="ex">Exception object.</param>
+        /// <param name="multilineOutput">
+        ///     If true, the linebreaks, tabs &amp; multiple
+        ///     occurances of whitespaces will be replaced
+        ///     by a single whitespace.
+        /// </param>
+        /// <param name="maxLength">
+        ///     Maximum length, default is zero.
+        ///     <br />
+        ///     If set to any value greater than zero,
+        ///     a string with a maximum length as
+        ///     specified will be returned.
         /// </param>
         /// <returns>
         ///      A string containing all the error messages &amp; traces in this format:
         ///      <br />
         ///      <code>
-        ///          [MESSAGE:&lt;message&gt;&#59;TRACE:&lt;stacktrace&gt;]
-        ///          [MESSAGE:&lt;child exception message&gt;&#59;TRACE:&lt;child exception stacktrace&gt;]
-        ///          .
-        ///          .
-        ///          .
-        ///          [MESSAGE:&lt;inner most exception message&gt;&#59;TRACE:&lt;inner most exception stacktrace&gt;]
+        ///          [
+        ///              { error: &lt;message&gt;, trace: &lt;stacktrace&gt; },
+        ///              { error: &lt;inner exception message&gt;, trace: &lt;inner exception stacktrace&gt; },
+        ///              .
+        ///              .
+        ///              .
+        ///              { error: &lt;inner most exception message&gt;, trace: &lt;inner most exception stacktrace&gt; }
+        ///          ]
         ///      </code>
+        ///      Returns null on error.
         /// </returns>
-        public static string GetFullTraceFromException(Exception ex, int currentDepth = 1)
+        public static string GetAllErrorTracesAsString(Exception ex, bool multilineOutput = true, int maxLength = 0)
         {
-            string trace = $"[MESSAGE:{ex?.Message ?? E};TRACE:{ex?.StackTrace ?? E}]";
-
-            if (ex.InnerException != null)
+            try
             {
-                trace +=
-                    GetFullTraceFromException(
-                        ex.InnerException,
-                        currentDepth + 1);
-            }
+                var errs =
+                    GetAllErrorTraces(ex, multilineOutput) ??
+                    throw new Exception("No data");
 
-            // Replace all the line breaks, tabs & multiple
-            // whitespaces with a single whitespace:
-            if (currentDepth == 1)
+                var res = SerializeObject(errs);
+
+                // If output should to be truncated:
+                return maxLength > 0 && maxLength < res.Length
+                        ? res.Substring(0, maxLength)
+                        : res;
+            }
+            catch
             {
-                trace =
-                    Regex.Replace(
-                        trace,
-                        @"\s+|\t+|(\r?\n)+",
-                        " ");
+                return null;
             }
-
-            return trace;
         }
     }
 }
